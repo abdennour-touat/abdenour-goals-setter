@@ -8,13 +8,14 @@ const {
   putGoals,
   deleteGoals,
 } = require("../controllers/goalController");
+const {protect} = require('../middleware/authMiddleware');
 
 //alternative way to call methods...
-router.route("/").get(getGoals).post(setGoals);
+router.route("/").get(protect, getGoals).post(protect, setGoals);
 // router.get("/", getGoals);
 // router.post("/", setGoals);
 
-router.route("/:id").put(putGoals).delete(deleteGoals);
+router.route("/:id").put(protect, putGoals).delete(protect, deleteGoals);
 // router.put("/:id", putGoals);
 // router.delete("/:id", deleteGoals);
 
