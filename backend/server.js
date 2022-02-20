@@ -1,3 +1,5 @@
+const path = require("path");
+
 // calling express to run the server
 const express = require("express");
 //to hide our sensitive informations
@@ -20,6 +22,19 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/goals", require("./routes/goalRoutes"));
 //calling the users route
 app.use("/api/users", require("./routes/usersRoutes"));
+
+//serv frontend
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  app.get("*", (req, res) =>
+    res.sendFile(
+      path.resolve(__dirname, "../", "frontend", "build", "index.html")
+    )
+  );
+} else {
+  app.get("/", (req, res) => res.send("Please set to production"));
+}
+
 //using our error handler
 app.use(errorHandler);
 

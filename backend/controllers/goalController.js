@@ -13,8 +13,11 @@ const User = require("../models/userModel");
 //@route GET /api/goals
 // @access Private
 const getGoals = asyncHandler(async (req, res) => {
-  const goals = await Goal.find();
-  res.status(200).json(goals);
+  const goals = await Goal.findById(req.user._id);
+  if (goals) {
+    res.status(200).json(goals);
+  }
+  res.status(200).json([]);
 });
 //@desc get goals
 //@route POST /api/goals
@@ -40,12 +43,12 @@ const putGoals = asyncHandler(async (req, res) => {
     throw new Error("Goal not found!");
   }
   //check for user
-  const user = user.findById(req.user.id);
-  if (!user) {
+  // const user = user.findById(req.user.id);
+  if (!req.user) {
     res.status(401);
     throw new Error("user not found");
   }
-  if (goal.user.toString() !== user.id) {
+  if (goal.user.toString() !== req.user.id) {
     res.status(401);
     throw new Error("user not authorized");
   }
@@ -59,15 +62,15 @@ const putGoals = asyncHandler(async (req, res) => {
 // @access Private
 const deleteGoals = asyncHandler(async (req, res) => {
   const goal = await Goal.findById(req.params.id);
-   
-  //check for user
-  const user = await User.findById(req.user.id);
 
-  if (!user) {
+  //check for user
+  // const user = await User.findById(req.user.id);
+  //the user already exists in the user part because we called it in the authmiddleware
+  if (!req.user) {
     res.status(401);
     throw new Error("user not found");
   }
-  if (goal.user.toString() !== user.id) {
+  if (goal.user.toString() !== req.user.id) {
     res.status(401);
     throw new Error("user not authorized");
   }
